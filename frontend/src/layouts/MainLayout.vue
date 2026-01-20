@@ -7,7 +7,7 @@ import Navbar from '../components/Navbar.vue';
   <div class="h-full w-full relative">
     <Navbar />
 
-    <div class="flex-1">
+    <div class="flex-1 bg-gray-50">
       <slot></slot>
     </div>
   </div>

@@ -23,6 +23,12 @@ const routes = [
     component: () => import("../views/Planning.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/profil",
+    name: "profil",
+    component: () => import("../views/Profil.vue"),
+    meta: {requiresAuth: true}
+  },
 
   {
     path: "/:pathMatch(.*)*",

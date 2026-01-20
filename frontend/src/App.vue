@@ -2,8 +2,10 @@
 </script>
 
 <template>
-  <RouterView />
+  <div class="bg-gray-50 w-screen h-screen">
+
+    <RouterView />
+  </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -46,6 +46,10 @@ const handleLogout = () => {
   router.push('/login');
 };
 
+const goTo = (path) => {
+  router.push(path)
+}
+
 onMounted(async () => {
   const res = await profil()
   if (res.data) {
@@ -59,7 +63,7 @@ onMounted(async () => {
 
 const dropdownLinks = ref([
   {
-    path: "profile/",
+    path: "profil/",
     label: "Profile",
   },
   {
@@ -70,7 +74,7 @@ const dropdownLinks = ref([
 
 </script>
 <template>
-  <nav class="shadow-xl/2">
+  <nav class="shadow-xl/2 bg-white">
     <div class="flex items-center justify-between px-8 py-4">
       <div class="flex items-center gap-3">
         <img :src="logoImg" alt="logo_aika" class="w-20 ">
@@ -95,7 +99,7 @@ const dropdownLinks = ref([
         <button class="cursor-pointer flex items-center gap-1 hover:bg-gray-50 px-4 py-2 rounded-lg transition"
           @click="handleDropdown">
           <span
-            class="w-10 h-10 flex items-center justify-center rounded-full bg-linear-30 from-sky-500 to-indigo-500 text-white font-bold">
+            class="w-10 h-10 flex items-center justify-center rounded-full bg-linear-30 from-sky-500 to-indigo-500 text-white text-sm font-bold">
             {{ user.userInitial }}
           </span>
           <ChevronDownIcon class="w-4 h-4 text-gray-700" v-if="!showDropdown" />
@@ -127,10 +131,10 @@ const dropdownLinks = ref([
             </div>
           </div>
           <div class="p-2">
-            <RouterLink :to="link.path" v-for="link in dropdownLinks"
+            <button @click="goTo(link.path)" v-for="link in dropdownLinks"
               class="w-full text-left px-4 py-3 hover:bg-gray-50 transition text-sm text-gray-700 flex items-center gap-3 ">
               <span class="font-medium">{{ link.label }}</span>
-            </RouterLink>
+            </button>
           </div>
           <div class="border-t border-gray-200 p-2">
             <button @click="handleLogout"
