@@ -2,7 +2,7 @@ from django.db import models
 
 from account.models import User
 
-class WeeklySchedule(models.Model):
+class Schedule(models.Model):
   STATUS_CHOICE = [
     ('TT', 'Télétravail'),
     ('R', 'Réunion'),

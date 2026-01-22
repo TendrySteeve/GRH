@@ -18,10 +18,16 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
-    path: "/planning",
-    name: "planning",
-    component: () => import("../views/Planning.vue"),
+    path: "/schedule",
+    name: "schedule",
+    component: () => import("../views/Schedule.vue"),
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/manage",
+    name: "manage",
+    component: () => import("../views/ScheduleManagement.vue"),
+    meta: {requiresAuth: true}
   },
   {
     path: "/setting",
@@ -48,7 +54,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !token) {
     next("/login");
   } else if ((to.path === "/login" || to.path === "/register") && token) {
-    next("/planning");
+    next("/schedule");
   } else {
     next();
   }

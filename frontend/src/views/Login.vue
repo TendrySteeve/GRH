@@ -41,7 +41,7 @@ const handleSubmit = async () => {
     localStorage.setItem('access_token', response.access);
     localStorage.setItem('refresh_token', response.refresh);
 
-    router.push('/planning');
+    router.push('/schedule');
   } catch (error) {
     if (error.status == 401) generalError.value = "Ce compte n'a pas encore l'autorisation. Contacter l'administrateur"
     else generalError.value = 'Erreur de connexion. Vérifiez vos identifiants.'

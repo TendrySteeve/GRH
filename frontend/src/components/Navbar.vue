@@ -14,7 +14,7 @@ const user = ref({})
 
 const links = ref([
   {
-    path: "/planning",
+    path: "/schedule",
     label: "Suivi planning",
     icon: CalendarIcon
   },
@@ -47,10 +47,10 @@ const goTo = (path) => {
 
 onMounted(async () => {
   const res = await profil()
-  if (res.data) {
-    let userInitial = getInitials(res.data.first_name, res.data.last_name)
+  if (res) {
+    let userInitial = getInitials(res.first_name, res.last_name)
     user.value = {
-      ...res.data,
+      ...res,
       userInitial
     }
   }

@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import WeeklySchedule
+from .models import Schedule
 
 
-class WeeklyScheduleSerializer(serializers.ModelSerializer):
+class ScheduleSerializer(serializers.ModelSerializer):
     status_label = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:
-        model = WeeklySchedule
+        model = Schedule
         fields = [
             "id",
             "user",

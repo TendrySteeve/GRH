@@ -1,12 +1,29 @@
-from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 
-from .serializers import WeeklyScheduleSerializer
-from .models import WeeklySchedule
+from .serializers import ScheduleSerializer
+from .models import Schedule
 
 
-class WeeklyScheduleViewSet(viewsets.ModelViewSet):
-    serializer_class = WeeklyScheduleSerializer
-    queryset = WeeklySchedule.objects.all()
+class ScheduleViewSet(viewsets.ModelViewSet):
+    serializer_class = ScheduleSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # L'utilisateur ne voit que ses propres schedules
+        return Schedule.objects.filter(user=self.request.user).select_related("user").order_by('-created_at')
+
+    def perform_create(self, serializer):
+        # On assigne automatiquement l'utilisateur connecté
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        if serializer.instance.user != self.request.user:
+            raise PermissionDenied("Vous ne pouvez modifier que votre planning")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if instance.user != self.request.user:
+            raise PermissionDenied("Vous ne pouvez supprimer que votre planning")
+        instance.delete()

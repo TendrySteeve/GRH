@@ -1,11 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
-from .views import WeeklyScheduleViewSet
+from .views import ScheduleViewSet
 
 router = SimpleRouter()
 router.register(
     r'schedule',
-    WeeklyScheduleViewSet,
+    ScheduleViewSet,
     basename='schedule'
 )
 

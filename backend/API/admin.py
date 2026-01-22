@@ -1,6 +1,6 @@
 from django.contrib import admin
 
 from . import models
-@admin.register(models.WeeklySchedule)
-class WeeklyScheduleAdmin(admin.ModelAdmin):
+@admin.register(models.Schedule)
+class ScheduleAdmin(admin.ModelAdmin):
   pass
