@@ -11,11 +11,9 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # L'utilisateur ne voit que ses propres schedules
-        return Schedule.objects.filter(user=self.request.user).select_related("user").order_by('-created_at')
+        return Schedule.objects.filter(user=self.request.user).select_related("user").order_by('-date')
 
     def perform_create(self, serializer):
-        # On assigne automatiquement l'utilisateur connecté
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):

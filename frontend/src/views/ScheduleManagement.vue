@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import MainLayout from '../layouts/MainLayout.vue';
 import { createSchedule, deleteSchedule, editSchedule, getAllSchedule } from '../api/schedule';
 import { profil } from '../api/auth';
+import { CalendarDaysIcon } from '@heroicons/vue/24/solid';
 
 const schedules = ref([])
 const isModalOpen = ref(false)
@@ -11,8 +12,6 @@ const user = ref({})
 const formData = ref({
   id: null,
   date: '',
-  start_time: '',
-  end_time: '',
   status_label: 'Sur site',
   description: ''
 })
@@ -45,8 +44,6 @@ const resetForm = () => {
   formData.value = {
     id: null,
     date: '',
-    start_time: '',
-    end_time: '',
     status_label: 'Sur site',
     description: ''
   }
@@ -63,8 +60,6 @@ const openEditModal = (schedule) => {
   formData.value = {
     id: schedule.id,
     date: schedule.date,
-    start_time: schedule.start_time,
-    end_time: schedule.end_time,
     status_label: schedule.status_label,
     description: schedule.description || ''
   }
@@ -126,7 +121,6 @@ onMounted(async () => {
 <template>
   <MainLayout>
     <div class="max-w-4xl mx-auto px-4 py-8">
-      <!-- En-tête avec bouton ajouter -->
       <div class="mb-8 flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-bold text-gray-900 mb-2">Planning</h1>
@@ -141,7 +135,6 @@ onMounted(async () => {
         </button>
       </div>
 
-      <!-- État vide -->
       <div v-if="schedules.length === 0"
         class="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
         <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,37 +151,26 @@ onMounted(async () => {
         </button>
       </div>
 
-      <!-- Liste des événements -->
       <div v-else class="space-y-4">
         <div v-for="schedule in schedules"
           class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200">
           <div class="p-6">
             <div class="flex items-start justify-between gap-4">
-              <!-- Date et heure -->
-              <div class="shrink-0">
-                <div class="text-sm font-medium text-gray-500 mb-1">Date</div>
-                <div class="text-lg font-semibold text-gray-900">{{ schedule.date }}</div>
-                <div class="flex items-center gap-2 mt-2 text-sm text-gray-600">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>{{ schedule.start_time }} - {{ schedule.end_time }}</span>
+              <div class="flex gap-3">
+                <div class="text-lg font-semibold text-gray-600 flex items-center gap-1">
+                  <CalendarDaysIcon class="w-5 h-5" /> {{ schedule.date }}
                 </div>
-              </div>
-
-              <!-- Badge statut et actions -->
-              <div class="flex flex-col items-end gap-3">
                 <span :class="[
                   getStatusConfig(schedule.status_label).color,
                   getStatusConfig(schedule.status_label).text,
                   getStatusConfig(schedule.status_label).border,
-                  'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border-l-4'
+                  'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border-2'
                 ]">
                   {{ schedule.status_label }}
                 </span>
+              </div>
 
-                <!-- Boutons d'action -->
+              <div class="flex flex-col items-end gap-3">
                 <div class="flex gap-2">
                   <button @click="openEditModal(schedule)"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200">
@@ -210,7 +192,6 @@ onMounted(async () => {
               </div>
             </div>
 
-            <!-- Description -->
             <div v-if="schedule.description" class="mt-4 pt-4 border-t border-gray-100">
               <p class="text-gray-700 text-sm leading-relaxed">{{ schedule.description }}</p>
             </div>
@@ -222,13 +203,10 @@ onMounted(async () => {
         aria-modal="true">
         <div
           class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0 bg-white/5 backdrop-blur-[2px]">
-          <!-- Center modal -->
           <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-          <!-- Modal panel -->
           <div
             class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-            <!-- Header -->
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-2xl font-bold text-gray-900" id="modal-title">
                 {{ isEditMode ? 'Modifier l\'événement' : 'Ajouter un événement' }}
@@ -240,9 +218,7 @@ onMounted(async () => {
               </button>
             </div>
 
-            <!-- Form -->
             <form @submit.prevent="handleSubmit" class="space-y-5">
-              <!-- Date -->
               <div>
                 <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
                   Date
@@ -250,26 +226,6 @@ onMounted(async () => {
                 <input type="date" id="date" v-model="formData.date" required
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
               </div>
-
-              <!-- Heures -->
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="start_time" class="block text-sm font-medium text-gray-700 mb-2">
-                    Heure de début
-                  </label>
-                  <input type="time" id="start_time" v-model="formData.start_time" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
-                </div>
-                <div>
-                  <label for="end_time" class="block text-sm font-medium text-gray-700 mb-2">
-                    Heure de fin
-                  </label>
-                  <input type="time" id="end_time" v-model="formData.end_time" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors" />
-                </div>
-              </div>
-
-              <!-- Statut -->
               <div>
                 <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
                   Statut
@@ -282,7 +238,6 @@ onMounted(async () => {
                 </select>
               </div>
 
-              <!-- Description -->
               <div>
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
                   Description (optionnel)
@@ -292,7 +247,6 @@ onMounted(async () => {
                   placeholder="Ajouter des détails..."></textarea>
               </div>
 
-              <!-- Buttons -->
               <div class="flex gap-3 pt-4">
                 <button type="button" @click="closeModal"
                   class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">

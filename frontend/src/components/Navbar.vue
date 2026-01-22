@@ -20,7 +20,7 @@ const links = ref([
   },
   {
     path: "/manage",
-    label: "Gestion RH",
+    label: "Gestion des planning",
     icon: Squares2X2Icon
   }
 ])
@@ -70,8 +70,8 @@ const dropdownLinks = ref([
       <div class="flex items-center gap-3">
         <img :src="logoImg" alt="logo_aika" class="w-20 ">
         <div class="">
-          <h1 class="text-xl font-bold text-gray-800">GRH</h1>
-          <p class="text-xs text-gray-500">Gestion des Ressources Humaines</p>
+          <h1 class="text-xl font-bold text-gray-600">Alliance Aika</h1>
+          <p class="text-xs text-gray-500">Suivi personnel</p>
         </div>
       </div>
       <div class="">

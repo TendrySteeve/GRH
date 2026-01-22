@@ -18,8 +18,6 @@ class Schedule(models.Model):
   user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedule_events')
 
   date = models.DateField()
-  start_time = models.TimeField()
-  end_time = models.TimeField()
 
   status = models.CharField(max_length=3, choices=STATUS_CHOICE)
   description = models.TextField(blank=True)
@@ -27,4 +25,4 @@ class Schedule(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:
-      ordering = ['date', 'start_time']
+      ordering = ['date']

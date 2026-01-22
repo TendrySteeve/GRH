@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import MainLayout from '../layouts/MainLayout.vue';
 import { profil } from '../api/auth';
-import {getInitials} from '../utils/Methods'
+import { getInitials } from '../utils/Methods'
 
 const user = ref({})
 let optionSelected = ref('profil')
@@ -23,12 +23,13 @@ const options = ref([
 
 onMounted(async () => {
   const res = await profil()
-  if (res.data) {
-    let userInitial = getInitials(res.data.first_name, res.data.last_name)
+  if (res) {
+    let userInitial = getInitials(res.first_name, res.last_name)
     user.value = {
-      ...res.data,
+      ...res,
       userInitial
     }
+
   }
 })
 
@@ -55,8 +56,6 @@ onMounted(async () => {
             </span>
             <div class="flex flex-col">
               <span class="text-gray-600 font-semibold">{{ user.first_name }} {{ user.last_name }}</span>
-              <span class="text-gray-500">{{ user.email }}</span>
-              <span v-if="user.phone" class="text-sm text-gray-400">{{ user.phone }}</span>
               <div><span class="text-xs py-1 px-2 rounded-full bg-purple-50 text-purple-500 font-medium">{{
                 user.role_label }}</span></div>
             </div>
@@ -77,9 +76,15 @@ onMounted(async () => {
               <strong class="text-gray-700">Nom d'utilisateur</strong>
               <p class="bg-gray-100 p-3 rounded-sm shadow-xs text-sm text-gray-600">{{ user.username }}</p>
             </div>
-            <div class="my-2 flex flex-col gap-1">
-              <strong class="text-gray-700">E-mail</strong>
-              <p class="bg-gray-100 p-3 rounded-sm shadow-xs text-sm text-gray-600">{{ user.email }}</p>
+            <div class="grid grid-cols-3 gap-5">
+              <div class="my-2 flex flex-col gap-1 col-span-2">
+                <strong class="text-gray-700">E-mail</strong>
+                <p class="bg-gray-100 p-3 rounded-sm shadow-xs text-sm text-gray-600">{{ user.email }}</p>
+              </div>
+              <div class="my-2 flex flex-col gap-1">
+                <strong class="text-gray-700">Téléphone</strong>
+                <p class="bg-gray-100 p-3 rounded-sm shadow-xs text-sm text-gray-600">{{ user.phone }}</p>
+              </div>
             </div>
 
           </div>

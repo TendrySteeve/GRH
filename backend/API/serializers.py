@@ -11,8 +11,6 @@ class ScheduleSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "date",
-            "start_time",
-            "end_time",
             "status",
             "status_label",
             "description",
