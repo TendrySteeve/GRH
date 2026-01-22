@@ -4,18 +4,13 @@ import logoImg from "../assets/Logo.png"
 import { CalendarIcon, ChevronDownIcon, ChevronUpIcon, Squares2X2Icon } from '@heroicons/vue/24/solid'
 import { useRouter, useRoute } from 'vue-router';
 import { logout, profil } from "../api/auth";
+import {getInitials} from '../utils/Methods'
+
 
 const route = useRoute()
 const router = useRouter()
 
 const user = ref({})
-
-const getInitials = (firstName, lastName) => {
-  const first = firstName ? firstName.charAt(0).toUpperCase() : '';
-  const last = lastName ? lastName.charAt(0).toUpperCase() : '';
-  return first + last || 'U';
-};
-
 
 const links = ref([
   {
@@ -63,11 +58,7 @@ onMounted(async () => {
 
 const dropdownLinks = ref([
   {
-    path: "profil/",
-    label: "Profile",
-  },
-  {
-    path: "setting",
+    path: "/setting",
     label: "Paramettre"
   }
 ])

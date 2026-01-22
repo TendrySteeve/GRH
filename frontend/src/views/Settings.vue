@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import MainLayout from '../layouts/MainLayout.vue';
 import { profil } from '../api/auth';
+import {getInitials} from '../utils/Methods'
 
 const user = ref({})
 let optionSelected = ref('profil')
@@ -19,13 +20,6 @@ const options = ref([
     label: "Changer mot de passe"
   }
 ])
-
-
-const getInitials = (firstName, lastName) => {
-  const first = firstName ? firstName.charAt(0).toUpperCase() : '';
-  const last = lastName ? lastName.charAt(0).toUpperCase() : '';
-  return first + last || 'U';
-};
 
 onMounted(async () => {
   const res = await profil()
