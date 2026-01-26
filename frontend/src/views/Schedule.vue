@@ -91,7 +91,7 @@ onMounted(async () => {
 </script>
 <template>
   <MainLayout>
-    <div class="p-8 bg-gray-50">
+    <div class="p-8 bg-gray-50 h-min-screen">
       <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
 
         <div
@@ -152,7 +152,7 @@ onMounted(async () => {
                       </div>
                     </div>
                     <div class="flex flex-col">
-                      <span class="text-sm font-bold text-gray-800">{{ user.first_name }} {{ user.last_name }}</span>
+                      <span class="text-sm font-bold text-gray-800">{{ user.first_name }}</span>
                       <span class="text-[10px] text-gray-400 font-medium italic truncate w-24">{{ user.role_label
                         }}</span>
                     </div>
@@ -161,7 +161,7 @@ onMounted(async () => {
 
                 <td v-for="day in daysInMonth" :key="day" @click="onCellClick(user.id, day)" :class="[
                   'border-r border-gray-50 p-1.5 relative min-w-17.5 h-20 transition-all cursor-pointer',
-                  isWeekend(day) ? 'bg-gray-50/30' : 'hover:bg-indigo-50/20'
+                  isWeekend(day) ? 'bg-gray-50/50' : 'hover:bg-indigo-50/70'
                 ]">
 
                   <div class="flex flex-col gap-1.5 h-full">

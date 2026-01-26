@@ -65,7 +65,7 @@ const dropdownLinks = ref([
 
 </script>
 <template>
-  <nav class="shadow-xl/2 bg-white">
+  <nav class="bg-white shadow sticky top-0">
     <div class="flex items-center justify-between px-8 py-4">
       <div class="flex items-center gap-3">
         <img :src="logoImg" alt="logo_aika" class="w-20 ">

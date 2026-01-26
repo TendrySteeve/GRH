@@ -4,3 +4,6 @@ from . import models
 @admin.register(models.Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
   pass
+@admin.register(models.Leave)
+class LeaveAdmin(admin.ModelAdmin):
+  pass
