@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
-from .views import ScheduleViewSet
+from .views import ScheduleViewSet, ScheduleAPIView
 
 router = SimpleRouter()
 router.register(
@@ -11,4 +11,5 @@ router.register(
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('all-schedules/', ScheduleAPIView.as_view(), name="all-schedule")
 ]

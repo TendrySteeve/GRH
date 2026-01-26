@@ -21,3 +21,8 @@ export const profil = async () => {
   const response = await apiClient.get(endpoint + "/profil");
   return response.data;
 };
+
+export const getAllUsers = async () => {
+  const response = await apiClient.get(endpoint + "/all-user/");
+  return response.data
+};

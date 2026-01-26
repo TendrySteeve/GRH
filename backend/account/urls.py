@@ -9,5 +9,6 @@ urlpatterns = [
     path("register/", views.RegisterView.as_view(), name="register"),
     path("token/", TokenObtainPairView.as_view(), name="token"),
     path("refresh/", TokenRefreshView.as_view(), name="refresh"),
-    path("profil/", views.ProfilView.as_view(), name="profil")
+    path("profil/", views.ProfilView.as_view(), name="profil"),
+    path("all-user/", views.UsersView.as_view(), name="all-user")
 ]

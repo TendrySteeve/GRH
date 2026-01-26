@@ -1,6 +1,6 @@
 import { apiClient } from "../config/axios";
 const endpoint = "api";
-export const getAllSchedule = async () => {
+export const getAllScheduleForUser = async () => {
   const res = await apiClient.get(endpoint + "/schedule/");
   return res.data;
 };
@@ -28,3 +28,8 @@ export const deleteSchedule = async (id) => {
   const res = await apiClient.delete(endpoint + `/schedule/${id}/`);
   return res.data;
 };
+
+export const getAllSchedules = async () => {
+  const res = await apiClient.get(endpoint + '/all-schedules/')
+  return res.data
+}

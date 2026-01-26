@@ -1,155 +1,257 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { getAllSchedules } from '../api/schedule';
 import MainLayout from '../layouts/MainLayout.vue';
-import { getInitials } from '../utils/Methods';
-import ScheduleDayView from '../components/schedule/ScheduleDayView.vue';
+import { getAllUsers } from '../api/auth';
 
-const userSelected = ref('all')
-const viewOptionSelected = ref('dayView')
-const isOpen = ref(false)
+const users = ref([]);
 
-const viewOptions = [
-  { valueOption: 'dayView', label: 'Vue du jour' },
-  { valueOption: 'monthView', label: 'Vue du mois' },
-  { valueOption: 'yearView', label: "Vue de l'année" }
-]
+const today = new Date()
+const currentYear = ref(today.getFullYear())
+const currentMonth = ref(today.getMonth())
+const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+const weekDays = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
 
-const selectedLabel = () => viewOptions.find(o => o.valueOption === viewOptionSelected.value)?.label
+const daysInMonth = computed(() => new Date(currentYear.value, currentMonth.value + 1, 0).getDate())
 
+const formatDate = (year, month, day) => {
+  const m = String(month + 1).padStart(2, '0')
+  const d = String(day).padStart(2, '0')
+  return `${year}-${m}-${d}`
+}
 
+const prevMonth = () => {
+  if (currentMonth.value === 0) { currentMonth.value = 11; currentYear.value-- }
+  else currentMonth.value--
+}
+const nextMonth = () => {
+  if (currentMonth.value === 11) { currentMonth.value = 0; currentYear.value++ }
+  else currentMonth.value++
+}
 
-const users = ref([
-  {
-    username: "tendrysteeve",
-    first_name: "Tendry",
-    last_name: "RASOLOMANDIMBY",
-    email: "rasolomandimbytendry@gmail.com",
-    role: "ADMIN",
-    role_label: "Administrateur"
-  },
+const schedules = ref([]);
 
-  {
-    username: "steeve",
-    first_name: "Steeve",
-    last_name: "RASOLOMANDIMBY",
-    email: "rasolomandimbysteeve@gmail.com",
-    role: "RESP",
-    role_label: "Responsable"
-  },
+const selectedCell = ref({ userId: null, day: null })
+const showPopup = ref(false)
 
-  {
-    username: "antenaina",
-    first_name: "Antenaina",
-    last_name: "RASOLOMANDIMBY",
-    email: "rasolomandimbyantenaina@gmail.com",
-    role: "EMPLOYEE",
-    role_label: "Employé"
-  },
-])
-
-
-const getColorRole = (role) => {
-  switch (role) {
-    case 'ADMIN':
-      return 'bg-fuchsia-50 text-fuchsia-500'
-    case 'RESP':
-      return 'bg-rose-50 text-rose-500'
-    case 'EMPLOYEE':
-      return 'bg-emerald-50 text-emerald-500'
-
-    default:
-      return ''
-
+const onCellClick = (userId, day) => {
+  if (selectedCell.value.userId === userId && selectedCell.value.day === day) {
+    showPopup.value = !showPopup.value
+  } else {
+    selectedCell.value = { userId, day }
+    showPopup.value = true
   }
 }
 
-</script>
+const schedulesForDay = (userId, day) => {
+  const dateStr = formatDate(currentYear.value, currentMonth.value, day)
+  return schedules.value.filter(s => s.user === userId && s.date === dateStr)
+}
 
+const selectedSchedules = computed(() => {
+  if (!showPopup.value || selectedCell.value.userId === null) return []
+  return schedulesForDay(selectedCell.value.userId, selectedCell.value.day)
+})
+
+const statusClasses = (status) => {
+  switch (status) {
+    case 'TT': return 'bg-blue-500 text-white'
+    case 'R': return 'bg-green-500 text-white'
+    case 'MI': return 'bg-yellow-400 text-black'
+    case 'P': return 'bg-red-500 text-white'
+    case 'CM': return 'bg-purple-400 text-white'
+    case 'M': return 'bg-gray-500 text-white'
+    case 'F': return 'bg-indigo-400 text-white'
+    case 'REC': return 'bg-pink-400 text-white'
+    case 'SS': return 'bg-teal-400 text-white'
+    default: return 'bg-gray-200 text-black'
+  }
+}
+
+const getDayName = (day) => {
+  const date = new Date(currentYear.value, currentMonth.value, day);
+  return weekDays[date.getDay()].substring(0, 2);
+};
+
+// Helper pour détecter les weekends
+const isWeekend = (day) => {
+  const date = new Date(currentYear.value, currentMonth.value, day);
+  const dayOfWeek = date.getDay();
+  return dayOfWeek === 0 || dayOfWeek === 6; // 0 = Dimanche, 6 = Samedi
+};
+
+onMounted(async () => {
+  try {
+    schedules.value = await getAllSchedules() // récupère les données dynamiques
+    users.value = await getAllUsers()
+  } catch (error) {
+    console.error('Erreur récupération schedules:', error)
+  }
+})
+</script>
 <template>
   <MainLayout>
-    <div class="grid grid-cols-4 gap-5 p-5">
-      <div class="bg-white rounded-lg shadow-md p-5">
-        <h3 class="text-indigo-500 text-2xl font-bold text-center py-3 mb-5">Voir les plannings</h3>
-        <ul class="flex flex-col gap-5 m-h-160 overflow-y-auto py-5">
-          <li>
-            <button @click="userSelected = 'all'"
-              :class="['w-full transition duration-200 py-4 px-5 rounded-xl text-start font-medium text-gray-600 text-lg', userSelected === 'all' ? 'bg-indigo-50 text-indigo-500' : 'hover:bg-indigo-50 bg-gray-50']">
-              Tout le planning
-            </button>
-          </li>
-          <li v-for="user in users" class="">
-            <button @click="userSelected = user.username"
-              :class="['w-full transition-all duration-150 py-2 px-3 rounded-md text-start border-l-5',
-                userSelected === user.username ? 'border-indigo-500 shadow-sm' : 'hover:border-indigo-500 border-indigo-500/0 hover:shadow-2xl/5']">
-              <div class="flex items-center gap-2">
-                <span
-                  class="w-8 h-8 flex items-center justify-center rounded-full bg-linear-30 from-sky-500 to-indigo-500 text-white text-sm font-bold">
-                  {{ getInitials(user.first_name, user.last_name) }}
-                </span>
-                <div class="flex flex-col">
-                  <span class="font-semibold text-gray-600 text-sm">{{ user.username }}</span>
-                  <span :class="['px-2 py-1 text-xs rounded-full', getColorRole(user.role)]">{{ user.role_label
-                  }}</span>
-                </div>
-              </div>
-            </button>
-          </li>
-        </ul>
-      </div>
-      <div class="col-span-3 bg-white rounded-lg shadow-md">
-        <!-- <div>
-          <div class="flex justify-between items-center p-5 bg-indigo-50 rounded-t-lg">
-            <span class="text-2xl font-bold text-gray-500">22 Janvier 2022</span>
-            <div class="flex gap-3">
-              <button class="px-4 py-2 rounded bg-white hover:bg-white/75 transition text-sm shadow-sm">Aujourd'hui</button>
-              <div class="relative w-40 text-gray-600">
-                <button @click="isOpen = !isOpen"
-                  class="w-full flex justify-between items-center px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg shadow-sm ">
-                  {{ selectedLabel() }}
-                </button>
-                <ul v-if="isOpen"
-                  class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                  <li v-for="option in viewOptions" :key="option.valueOption"
-                    @click="viewOptionSelected = option.valueOption; isOpen = false"
-                    class="px-4 py-2 text-sm cursor-pointer hover:bg-sky-100"
-                    :class="{ 'bg-sky-50 text-sky-600 font-medium': viewOptionSelected === option.valueOption }">
-                    {{ option.label }}
-                  </li>
-                </ul>
-              </div>
-              <button class="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg text-sm hover:bg-blue-600 transition">Ajouter un
-                événement</button>
+    <div class="p-8 bg-gray-50">
+      <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+
+        <div
+          class="flex items-center justify-between p-5 border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-30">
+          <div class="flex items-center gap-6">
+            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+              {{ monthNames[currentMonth] }} <span class="text-indigo-500 font-light">{{ currentYear }}</span>
+            </h2>
+
+            <div class="flex items-center bg-gray-100 rounded-xl p-1 shadow-inner">
+              <button @click="prevMonth"
+                class="p-2 hover:bg-white hover:shadow-sm rounded-lg transition-all text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div class="w-px h-4 bg-gray-300 mx-1"></div>
+              <button @click="nextMonth"
+                class="p-2 hover:bg-white hover:shadow-sm rounded-lg transition-all text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </div>
-        </div> -->
-        <ScheduleDayView />
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full border-separate border-spacing-0">
+            <thead>
+              <tr class="bg-gray-50/50">
+                <th
+                  class="sticky left-0 z-20 bg-white border-b border-r border-gray-200 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                  Collaborateurs
+                </th>
+                <th v-for="day in daysInMonth" :key="day" :class="[
+                  'border-b border-gray-200 px-2 py-3 min-w-17.5 text-center transition-colors',
+                  isWeekend(day) ? 'bg-gray-100/50' : ''
+                ]">
+                  <span :class="['block text-sm font-black', isWeekend(day) ? 'text-gray-400' : 'text-gray-800']">{{ day
+                    }}</span>
+                  <span class="text-[10px] uppercase font-bold text-gray-400">
+                    {{ getDayName(day) }}
+                  </span>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-100">
+              <tr v-for="user in users" :key="user.id" class="group transition-colors">
+                <td
+                  class="sticky left-0 z-10 bg-white group-hover:bg-indigo-50/30 border-r border-gray-100 px-6 py-4 whitespace-nowrap shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
+                  <div class="flex items-center gap-4">
+                    <div class="relative">
+                      <div
+                        class="w-10 h-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-xs font-bold shadow-md transform group-hover:scale-110 transition-transform">
+                        {{ user.first_name[0] }}{{ user.last_name[0] }}
+                      </div>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-sm font-bold text-gray-800">{{ user.first_name }} {{ user.last_name }}</span>
+                      <span class="text-[10px] text-gray-400 font-medium italic truncate w-24">{{ user.role_label
+                        }}</span>
+                    </div>
+                  </div>
+                </td>
+
+                <td v-for="day in daysInMonth" :key="day" @click="onCellClick(user.id, day)" :class="[
+                  'border-r border-gray-50 p-1.5 relative min-w-17.5 h-20 transition-all cursor-pointer',
+                  isWeekend(day) ? 'bg-gray-50/30' : 'hover:bg-indigo-50/20'
+                ]">
+
+                  <div class="flex flex-col gap-1.5 h-full">
+                    <div v-for="s in schedulesForDay(user.id, day)" :key="s.id"
+                      class="text-[9px] leading-tight rounded-lg px-2 py-1.5 shadow-sm font-bold border-l-4 transition-transform hover:scale-105"
+                      :class="statusClasses(s.status)">
+                      {{ s.status_label }}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <Transition name="fade">
+        <div v-if="showPopup" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div class="absolute inset-0 bg-gray-900/10 backdrop-blur-[2px]" @click="showPopup = false"></div>
+
+          <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+            <div class="p-8">
+              <div class="flex justify-between items-center mb-6">
+                <div>
+                  <p class="text-indigo-500 text-xs font-black uppercase tracking-widest">Détails du jour</p>
+                  <h3 class="text-2xl font-bold text-gray-900">
+                    {{ selectedCell.day }} {{ monthNames[currentMonth] }}
+                  </h3>
+                </div>
+                <button @click="showPopup = false"
+                  class="bg-gray-100 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:rotate-90 transition-all">✕</button>
+              </div>
+
+              <div class="space-y-4 max-h-100 overflow-y-auto pr-2">
+                <div v-for="s in selectedSchedules" :key="s.id"
+                  class="group flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:border-indigo-200 transition-colors">
+                  <div :class="statusClasses(s.status)"
+                    class="w-3 h-3 mt-1.5 rounded-full ring-4 ring-white shadow-sm shrink-0"></div>
+                  <div class="flex-1">
+                    <div class="flex justify-between">
+                      <p class="text-[10px] font-black uppercase text-gray-400">{{ s.status_label }}</p>
+                      <span class="text-[10px] text-gray-400">09:00 - 18:00</span>
+                    </div>
+                    <p class="text-sm font-medium text-gray-700 mt-1 leading-relaxed">{{ s.description }}</p>
+                  </div>
+                </div>
+
+                <div v-if="selectedSchedules.length === 0" class="text-center py-10">
+                  <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    ☕</div>
+                  <p class="text-gray-400 text-sm font-medium">Rien de prévu pour cette journée.</p>
+                </div>
+              </div>
+
+              <button @click="showPopup = false"
+                class="w-full mt-8 py-4 bg-gray-900 text-white rounded-2xl font-bold hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-200 transition-all active:scale-95">
+                Fermer l'aperçu
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+
     </div>
   </MainLayout>
 </template>
-
 <style scoped>
-.overflow-y-auto {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
 }
 
-.overflow-y-auto::-webkit-scrollbar {
-  height: 10px;
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 8px;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: #94a3b8;
-  border-radius: 8px;
-  border: 2px solid #f1f5f9;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background-color: #64748b;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

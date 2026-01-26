@@ -15,16 +15,13 @@ const goBack = () => {
 <template>
   <div class="h-screen w-full flex justify-center items-center bg-gray-50">
     <div class="text-center">
-      <!-- 404 Title -->
       <h1 class="text-9xl font-bold text-sky-600 mb-4">404</h1>
       
-      <!-- Error Message -->
       <h2 class="text-4xl font-bold text-gray-800 mb-2">Page non trouvée</h2>
       <p class="text-gray-600 text-lg mb-8">
         Désolé, la page que vous recherchez n'existe pas ou a été supprimée.
       </p>
       
-      <!-- Buttons -->
       <div class="flex gap-4 justify-center">
         <button 
           @click="goHome"
@@ -41,7 +38,6 @@ const goBack = () => {
         </button>
       </div>
       
-      <!-- Illustration (optionnel) -->
       <div class="mt-12">
         <svg class="w-48 h-48 mx-auto text-gray-300" fill="currentColor" viewBox="0 0 24 24">
           <path d="M0 0h24v24H0z" fill="none"/>

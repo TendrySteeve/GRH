@@ -36,7 +36,6 @@ const handleSubmit = async () => {
 
   try {
     const response = await login(formData.value);
-    console.log('Login successful:', response);
 
     localStorage.setItem('access_token', response.access);
     localStorage.setItem('refresh_token', response.refresh);

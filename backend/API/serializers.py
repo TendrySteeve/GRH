@@ -4,7 +4,6 @@ from .models import Schedule
 
 class ScheduleSerializer(serializers.ModelSerializer):
     status_label = serializers.CharField(source="get_status_display", read_only=True)
-
     class Meta:
         model = Schedule
         fields = [

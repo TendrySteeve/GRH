@@ -24,3 +24,10 @@ class ProfilView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+    
+
+class UsersView(APIView):
+    def get(self, request):
+        users = User.objects.all()
+        serialzer = UserSerializer(users, many=True )
+        return Response(serialzer.data)

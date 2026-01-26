@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 
@@ -25,3 +27,10 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         if instance.user != self.request.user:
             raise PermissionDenied("Vous ne pouvez supprimer que votre planning")
         instance.delete()
+
+
+class ScheduleAPIView(APIView):
+    def get(self, request):
+        schedules = Schedule.objects.all()
+        serializer = ScheduleSerializer(schedules, many=True)
+        return Response(serializer.data)
