@@ -80,7 +80,6 @@ const openEditModal = (leave) => {
 }
 
 const removeLeave = async (id) => {
-  if (!confirm('Supprimer ce congé ?')) return
   await deleteLeave(id)
   leaves.value = leaves.value.filter(l => l.id !== id)
 }

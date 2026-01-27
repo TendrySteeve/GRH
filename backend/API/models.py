@@ -2,74 +2,72 @@ from django.db import models
 
 from account.models import User
 
+
 class Schedule(models.Model):
-  STATUS_CHOICE = [
-    ('TT', 'Télétravail'),
-    ('R', 'Réunion'),
-    ('CM', 'Congés de matérnité'),
-    ('MI', 'Mission'),
-    ('P', 'Permission'),
-    ('M', 'Maladie'),
-    ('F', 'Formation'),
-    ('REC', 'Récupération'),
-    ('SS', 'Sur site')
-  ]
-  
-  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedule_events')
+    STATUS_CHOICE = [
+        ("TT", "Télétravail"),
+        ("R", "Réunion"),
+        ("CM", "Congés de matérnité"),
+        ("MI", "Mission"),
+        ("P", "Permission"),
+        ("M", "Maladie"),
+        ("F", "Formation"),
+        ("REC", "Récupération"),
+        ("SS", "Sur site"),
+    ]
 
-  date = models.DateField()
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="schedule_events"
+    )
 
-  status = models.CharField(max_length=3, choices=STATUS_CHOICE)
-  description = models.TextField(blank=True)
+    date = models.DateField()
 
-  created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=3, choices=STATUS_CHOICE)
+    description = models.TextField(blank=True)
 
-  class Meta:
-        ordering = ['-created_at']
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
         verbose_name = "Planning"
         verbose_name_plural = "Plannings"
 
-  class Meta:
-      ordering = ['date']
+    class Meta:
+        ordering = ["date"]
 
 
 class Leave(models.Model):
 
     LEAVE_TYPE_CHOICES = [
-        ('AN', 'Congé annuel'),
-        ('CM', 'Congé de maternité'),
-        ('CP', 'Congé de paternité'),
-        ('ML', 'Maladie'),
-        ('SP', 'Sans solde'),
-        ('AU', 'Autorisation spéciale'),
+        ("AN", "Congé annuel"),
+        ("CM", "Congé de maternité"),
+        ("CP", "Congé de paternité"),
+        ("ML", "Maladie"),
+        ("SP", "Sans solde"),
+        ("AU", "Autorisation spéciale"),
     ]
 
     STATUS_CHOICES = [
-        ('PENDING', 'En attente'),
-        ('APPROVED', 'Approuvé'),
-        ('REJECTED', 'Rejeté'),
+        ("PENDING", "En attente"),
+        ("APPROVED", "Approuvé"),
+        ("REJECTED", "Rejeté"),
     ]
 
     user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='leaves'
+        User, on_delete=models.CASCADE, related_name="leaves", verbose_name="Employé"
     )
 
     leave_type = models.CharField(
-        max_length=2,
-        choices=LEAVE_TYPE_CHOICES
+        max_length=2, choices=LEAVE_TYPE_CHOICES, verbose_name="Type de congé"
     )
 
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(verbose_name="Date de début")
+    end_date = models.DateField(verbose_name="Date de fin")
 
-    reason = models.TextField(blank=True)
+    reason = models.TextField(blank=True, verbose_name="Motif")
 
     status = models.CharField(
-        max_length=10,
-        choices=STATUS_CHOICES,
-        default='PENDING'
+        max_length=10, choices=STATUS_CHOICES, default="PENDING", verbose_name="Statut"
     )
 
     approved_by = models.ForeignKey(
@@ -77,16 +75,26 @@ class Leave(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='approved_leaves'
+        related_name="validated_leaves",
+        verbose_name="Validé par",
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    approved_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="Date de validation"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
+
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Mis à jour le")
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
         verbose_name = "Congé"
         verbose_name_plural = "Congés"
 
     def __str__(self):
-        return f"{self.user} - {self.get_leave_type_display()} ({self.start_date} → {self.end_date})"
+        return (
+            f"{self.user} | "
+            f"{self.get_leave_type_display()} | "
+            f"{self.start_date} → {self.end_date}"
+        )

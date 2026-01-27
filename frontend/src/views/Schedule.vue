@@ -185,7 +185,7 @@ onMounted(async () => {
                       </div>
                     </div>
                     <div class="flex flex-col">
-                      <span class="text-sm font-bold text-gray-800">{{ user.first_name }}</span>
+                      <span class="text-sm font-bold text-gray-800">@{{ user.username }}</span>
                       <span class="text-[10px] text-gray-400 font-medium italic truncate w-24">{{ user.role_label
                       }}</span>
                     </div>
