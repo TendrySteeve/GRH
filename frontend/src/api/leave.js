@@ -12,15 +12,12 @@ export const getLeave = async (id) => {
 
 export const createLeave = async (Leave) => {
   const res = await apiClient.post(endpoint + "/leave/", Leave);
-  console.log(res)
+  console.log(res);
   return res.data;
 };
 
 export const editLeave = async (Leave) => {
-  const res = await apiClient.put(
-    endpoint + `/leave/${Leave.id}/`,
-    Leave,
-  );
+  const res = await apiClient.put(endpoint + `/leave/${Leave.id}/`, Leave);
   return res.data;
 };
 
@@ -29,22 +26,21 @@ export const deleteLeave = async (id) => {
   return res.data;
 };
 
-
-export const getAllLeaves = async () => {
-  const res = await apiClient.get(endpoint + '/all-leaves/')
-  return res.data
-}
-
-export const approveLeave = async (id) => {
-  const res = await apiClient.patch(endpoint + `/leave/${id}/validate_leave/`, {
-    status: "APPROVED",
-  });
+export const getAllLeavesPending = async () => {
+  const res = await apiClient.get(endpoint + "/all-leaves/");
   return res.data;
 };
 
+export const approveLeave = async (id) => {
+  const res = await apiClient.patch(endpoint + `/leave/${id}/`, {
+    status: "APPROVED",
+  });
+  return res;
+};
+
 export const rejectLeave = async (id) => {
-  const res = await apiClient.patch(endpoint + `/leave/${id}/validate_leave/`, {
+  const res = await apiClient.patch(endpoint + `/leave/${id}/`, {
     status: "REJECTED",
   });
-  return res.data;
+  return res;
 };

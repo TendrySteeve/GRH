@@ -28,6 +28,10 @@ class LeaveSerializer(serializers.ModelSerializer):
     )
     status_label = serializers.CharField(source="get_status_display", read_only=True)
     user_name = serializers.CharField(source="user.username", read_only=True)
+    user_firstname = serializers.CharField(source="user.first_name", read_only=True)
+    user_lastname = serializers.CharField(source="user.last_name", read_only=True)
+    user_fullname = serializers.SerializerMethodField()
+    
 
     class Meta:
         model = models.Leave
@@ -35,6 +39,9 @@ class LeaveSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "user_name",
+            "user_firstname",
+            "user_lastname",
+            "user_fullname",
             "leave_type",
             "leave_type_label",
             "start_date",
@@ -56,19 +63,19 @@ class LeaveSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
+    def get_user_fullname(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}".strip()
+
     def create(self, validated_data):
         request_user = self.context["request"].user
         validated_data["user"] = request_user
         return super().create(validated_data)
 
-    # -----------------------
-    # Mise à jour
-    # -----------------------
     def update(self, instance, validated_data):
         request_user = self.context["request"].user
 
-        # 🟢 Validation par ADMIN ou RESP
         if "status" in validated_data:
+            print('status')
             if request_user.role not in ["ADMIN", "RESP"]:
                 raise PermissionDenied(
                     "Seul l'ADMIN ou le RESPONSABLE peut valider un congé."

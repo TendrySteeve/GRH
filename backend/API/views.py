@@ -56,17 +56,24 @@ class LeaveViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         user = self.request.user
         leave = serializer.instance
+        data = serializer.validated_data
 
-        if "status" in serializer.validated_data:
+        if "status" in data:
             if user.role not in ["ADMIN", "RESP"]:
                 raise PermissionDenied(
-                    "Seul l'ADMIN ou le RESPONSABLE peut valider/rejeter un congé."
+                    "Seul l'ADMIN ou le RESPONSABLE peut valider ou rejeter un congé."
                 )
-            serializer.save(approved_by=user, approved_at=timezone.now())
+
+            serializer.save(
+                approved_by=user,
+                approved_at=timezone.now()
+            )
             return
 
         if leave.user != user:
-            raise PermissionDenied("Vous ne pouvez modifier que vos propres congés.")
+            raise PermissionDenied(
+                "Vous ne pouvez modifier que vos propres congés."
+            )
 
         if leave.status in ["APPROVED", "REJECTED"]:
             raise PermissionDenied(
@@ -93,6 +100,6 @@ class LeaveViewSet(viewsets.ModelViewSet):
 class LeaveAPIView(APIView):
     permission_classes = [IsAuthenticated, permissions.IsAdminOrResponsable]
     def get(self, request):
-        leaves = models.Leave.objects.all()
+        leaves = models.Leave.objects.filter(status='PENDING')
         serializer = serializers.LeaveSerializer(leaves, many=True)
         return Response(serializer.data)
