@@ -49,7 +49,7 @@ const configs = {
     enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-200"
     leave-from-class="opacity-100" leave-to-class="opacity-0">
     <div v-if="show" :class="[configs[type].bg, configs[type].border]"
-      class="fixed bottom-5 right-5 z-[100] w-full max-w-sm overflow-hidden rounded-[1.5rem] border backdrop-blur-md shadow-2xl shadow-black/5">
+      class="fixed bottom-5 right-5 z-100 w-full max-w-sm overflow-hidden rounded-3xl border backdrop-blur-md shadow-2xl shadow-black/5">
       <div class="p-4">
         <div class="flex items-start gap-4">
           <div :class="[configs[type].bg, 'p-2 rounded-xl shadow-inner']">

@@ -28,3 +28,23 @@ export const deleteLeave = async (id) => {
   const res = await apiClient.delete(endpoint + `/leave/${id}/`);
   return res.data;
 };
+
+
+export const getAllLeaves = async () => {
+  const res = await apiClient.get(endpoint + '/all-leaves/')
+  return res.data
+}
+
+export const approveLeave = async (id) => {
+  const res = await apiClient.patch(endpoint + `/leave/${id}/validate_leave/`, {
+    status: "APPROVED",
+  });
+  return res.data;
+};
+
+export const rejectLeave = async (id) => {
+  const res = await apiClient.patch(endpoint + `/leave/${id}/validate_leave/`, {
+    status: "REJECTED",
+  });
+  return res.data;
+};
