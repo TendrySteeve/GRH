@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from django.utils import timezone
 
-
+from account import permissions
 from . import serializers
 from . import models
 
@@ -91,6 +91,7 @@ class LeaveViewSet(viewsets.ModelViewSet):
         )
 
 class LeaveAPIView(APIView):
+    permission_classes = [IsAuthenticated, permissions.IsAdminOrResponsable]
     def get(self, request):
         leaves = models.Leave.objects.all()
         serializer = serializers.LeaveSerializer(leaves, many=True)
