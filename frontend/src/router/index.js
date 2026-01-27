@@ -36,6 +36,12 @@ const routes = [
     meta: {requiresAuth: true}
   },
   {
+    path: "/validate-leave",
+    name: "validate-leave",
+    component: () => import("../views/LeaveValidation.vue"),
+    meta: {requiresAuth: true}
+  },
+  {
     path: "/setting",
     name: "setting",
     component: () => import("../views/Settings.vue"),

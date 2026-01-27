@@ -11,6 +11,7 @@ const currentYear = ref(today.getFullYear())
 const currentMonth = ref(today.getMonth())
 const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 const weekDays = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
+const todayCell = ref(null)
 
 const daysInMonth = computed(() => new Date(currentYear.value, currentMonth.value + 1, 0).getDate())
 
@@ -80,6 +81,13 @@ const isWeekend = (day) => {
   return dayOfWeek === 0 || dayOfWeek === 6; // 0 = Dimanche, 6 = Samedi
 };
 
+const isToday = (day) => {
+  const now = new Date()
+  return day === now.getDate() && 
+         currentMonth.value === now.getMonth() && 
+         currentYear.value === now.getFullYear()
+}
+
 const goToToday = () => {
   const today = new Date();
   currentMonth.value = today.getMonth(); // 0-11
@@ -87,6 +95,14 @@ const goToToday = () => {
 };
 
 onMounted(async () => {
+  if (todayCell.value) {
+    todayCell.value.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center', 
+      block: 'nearest'
+    })
+  }
+
   try {
     schedules.value = await getAllSchedules() // récupère les données dynamiques
     users.value = await getAllUsers()
@@ -101,10 +117,10 @@ onMounted(async () => {
       <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
 
         <div
-          class="flex items-center justify-between p-5 border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-30">
+          class="flex items-center justify-between p-5 border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0">
           <div class="flex items-center gap-6">
 
-            <div class="w-60 md:w-72 flex-shrink-0">
+            <div class="w-60 md:w-72 shrink-0">
               <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight truncate">
                 {{ monthNames[currentMonth] }}
                 <span class="text-blue-500 font-light ml-1">{{ currentYear }}</span>
@@ -136,15 +152,15 @@ onMounted(async () => {
           </button>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto scroll-smooth">
           <table class="w-full border-separate border-spacing-0">
             <thead>
               <tr class="bg-gray-50/50">
                 <th
-                  class="sticky left-0 z-20 bg-white border-b border-r border-gray-200 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                  class="sticky left-0 bg-white border-b border-r border-gray-200 px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
                   Collaborateurs
                 </th>
-                <th v-for="day in daysInMonth" :key="day" :class="[
+                <th v-for="day in daysInMonth" :key="day" :ref="el => { if (isToday(day)) todayCell = el }" :class="[
                   'border-b border-gray-200 px-2 py-3 min-w-17.5 text-center transition-colors',
                   isWeekend(day) ? 'bg-gray-100/50' : ''
                 ]">
@@ -160,7 +176,7 @@ onMounted(async () => {
             <tbody class="divide-y divide-gray-100">
               <tr v-for="user in users" :key="user.id" class="group transition-colors">
                 <td
-                  class="sticky left-0 z-10 bg-white group-hover:bg-indigo-50/30 border-r border-gray-100 px-6 py-4 whitespace-nowrap shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)]">
+                  class="sticky left-0 bg-white group-hover:bg-indigo-50/30 border-r border-gray-100 px-6 py-4 whitespace-nowrap shadow-[4px_0_10px_-5px_rgba(0,0,0,0.05)] z-20">
                   <div class="flex items-center gap-4">
                     <div class="relative">
                       <div
@@ -196,7 +212,7 @@ onMounted(async () => {
       </div>
 
       <Transition name="fade">
-        <div v-if="showPopup" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div v-if="showPopup" class="fixed inset-0 flex items-center justify-center p-4">
           <div class="absolute inset-0 bg-gray-900/10 backdrop-blur-[2px]" @click="showPopup = false"></div>
 
           <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">

@@ -1,10 +1,10 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import logoImg from "../assets/Logo.png"
-import { CalendarIcon, ChevronDownIcon, ChevronUpIcon, Squares2X2Icon, CalendarDaysIcon } from '@heroicons/vue/24/solid'
+import { CalendarIcon, ChevronDownIcon, ChevronUpIcon, Squares2X2Icon, CalendarDaysIcon, CheckBadgeIcon, ChevronRightIcon } from '@heroicons/vue/24/solid'
 import { useRouter, useRoute } from 'vue-router';
 import { logout, profil } from "../api/auth";
-import {getInitials} from '../utils/Methods'
+import { getInitials } from '../utils/Methods'
 
 
 const route = useRoute()
@@ -23,11 +23,16 @@ const links = ref([
     label: "Gestion des planning",
     icon: Squares2X2Icon
   },
-   {
+  {
     path: "/manage-leave",
     label: "Gestion des congé",
     icon: CalendarDaysIcon
-   }
+  },
+  {
+    path: "/validate-leave",
+    label: "Validation des Congés",
+    icon: CheckBadgeIcon
+  }
 ])
 
 const isActive = (menuRoute) => {
@@ -70,13 +75,13 @@ const dropdownLinks = ref([
 
 </script>
 <template>
-  <nav class="bg-white shadow sticky top-0">
+  <nav class="bg-white shadow sticky top-0 z-50">
     <div class="flex items-center justify-between px-8 py-4">
       <div class="flex items-center gap-3">
         <img :src="logoImg" alt="logo_aika" class="w-20 ">
         <div class="">
           <h1 class="text-xl font-bold text-gray-600">Alliance Aika</h1>
-          <p class="text-xs text-gray-500">Suivi personnel</p>
+          <p class="text-xs text-gray-500">Gestion RH</p>
         </div>
       </div>
       <div class="">
@@ -101,40 +106,51 @@ const dropdownLinks = ref([
           <ChevronDownIcon class="w-4 h-4 text-gray-700" v-if="!showDropdown" />
           <ChevronUpIcon class="w-4 h-4 text-gray-700" v-if="showDropdown" />
         </button>
-        <div v-if="showDropdown" class="absolute z-50 w-54 right-5 mt-1 bg-white shadow-2xl/8 rounded ">
-          <div class="px-4 py-4 border-b border-gray-200 bg-linear-to-r from-sky-50 to-blue-50">
-            <div class="flex items-center gap-3 mb-3">
+        <div v-if="showDropdown"
+          class="absolute z-50 w-72 right-5 mt-3 bg-white/95 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-3xl border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
 
+          <div class="px-6 py-6 border-b border-gray-100 bg-linear-to-br from-gray-50/50 to-white">
+            <div class="flex items-center gap-4 mb-4">
+              <div
+                class="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-100">
+                {{ user.first_name.charAt(0) }}{{ user.last_name.charAt(0) }}
+              </div>
               <div>
-                <p class="text-sm font-bold text-gray-800">{{ user.name }}</p>
-                <p class="text-xs text-gray-600">{{ user.email }}</p>
+                <p class="text-sm font-black text-gray-900 tracking-tight leading-none mb-1">{{ user.name }}</p>
+                <p class="text-[11px] font-medium text-gray-400 truncate w-40">{{ user.email }}</p>
               </div>
             </div>
 
-            <div class="flex items-center gap-2 mb-2">
-              <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold">
-                ✓ En ligne
+            <div class="flex items-center gap-2">
+              <div
+                class="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ring-1 ring-inset ring-emerald-600/10">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                En ligne
               </div>
-              <div class="text-xs bg-sky-100 text-sky-700 px-2 py-1 rounded-full font-semibold">
+              <div
+                class="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ring-1 ring-inset ring-blue-600/10">
                 {{ user.role_label }}
               </div>
             </div>
-
-            <div class="text-xs text-gray-600 space-y-1">
-              <p v-if="user.phone">
-                <span class="font-semibold">Téléphone:</span> {{ user.phone }}
-              </p>
-            </div>
           </div>
+
+          <div v-if="user.phone" class="px-6 py-3 bg-gray-50/50 border-b border-gray-50">
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mb-0.5">Téléphone</p>
+            <p class="text-xs text-gray-700 font-bold">{{ user.phone }}</p>
+          </div>
+
           <div class="p-2">
-            <button @click="goTo(link.path)" v-for="link in dropdownLinks"
-              class="w-full text-left px-4 py-3 hover:bg-gray-50 transition text-sm text-gray-700 flex items-center gap-3 ">
-              <span class="font-medium">{{ link.label }}</span>
+            <button @click="goTo(link.path)" v-for="link in dropdownLinks" :key="link.path"
+              class="w-full text-left px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all duration-200 text-sm text-gray-600 hover:text-blue-600 flex items-center justify-between group">
+              <span class="font-bold tracking-tight">{{ link.label }}</span>
+              <ChevronRightIcon
+                class="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-blue-400" />
             </button>
           </div>
-          <div class="border-t border-gray-200 p-2">
+
+          <div class="p-2 bg-gray-50/30">
             <button @click="handleLogout"
-              class="w-full text-left px-4 py-3 hover:bg-red-50 transition text-sm text-red-600 hover:text-red-700 flex items-center gap-3 font-semibold rounded-lg">
+              class="w-full text-left px-4 py-3 hover:bg-red-50 rounded-xl transition-all duration-200 text-sm text-red-500 hover:text-red-600 flex items-center gap-3 font-black uppercase tracking-widest text-[10px]">
               Déconnexion
             </button>
           </div>
