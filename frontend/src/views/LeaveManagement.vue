@@ -303,7 +303,7 @@ onMounted(async () => {
 
       <Transition name="modal">
         <div v-if="showModal" @click.self="closeModal"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md">
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/10 backdrop-blur-xs">
 
           <div
             class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">

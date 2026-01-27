@@ -192,8 +192,8 @@ onMounted(async () => {
 
           <button @click="selectedStatusFilter = 'Tous'" :class="[
             selectedStatusFilter === 'Tous'
-              ? 'bg-gray-500 text-white shadow-lg shadow-gray-200 -translate-y-0.5'
-              : 'bg-white text-gray-400 hover:text-gray-600 hover:bg-gray-50 border-transparent',
+              ? 'bg-white border-white shadow-xl shadow-blue-100/50 -translate-y-0.5'
+            : 'bg-transparent border-transparent text-gray-400 hover:text-gray-600',
             'group px-6 py-3 rounded-xl text-[11px] font-black border transition-all duration-300 whitespace-nowrap uppercase tracking-widest flex items-center gap-2'
           ]">
             <span>Tous</span>
@@ -289,7 +289,7 @@ onMounted(async () => {
       <Transition name="modal">
 
         <div v-if="isModalOpen" @click.self="closeModal"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md">
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/10 backdrop-blur-xs">
 
           <div
             class="bg-white rounded-4xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">

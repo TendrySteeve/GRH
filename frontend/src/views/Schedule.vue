@@ -80,6 +80,12 @@ const isWeekend = (day) => {
   return dayOfWeek === 0 || dayOfWeek === 6; // 0 = Dimanche, 6 = Samedi
 };
 
+const goToToday = () => {
+  const today = new Date();
+  currentMonth.value = today.getMonth(); // 0-11
+  currentYear.value = today.getFullYear();  
+};
+
 onMounted(async () => {
   try {
     schedules.value = await getAllSchedules() // récupère les données dynamiques
@@ -97,26 +103,37 @@ onMounted(async () => {
         <div
           class="flex items-center justify-between p-5 border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-30">
           <div class="flex items-center gap-6">
-            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">
-              {{ monthNames[currentMonth] }} <span class="text-indigo-500 font-light">{{ currentYear }}</span>
-            </h2>
 
-            <div class="flex items-center bg-gray-100 rounded-xl p-1 shadow-inner">
+            <div class="w-60 md:w-72 flex-shrink-0">
+              <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight truncate">
+                {{ monthNames[currentMonth] }}
+                <span class="text-blue-500 font-light ml-1">{{ currentYear }}</span>
+              </h2>
+            </div>
+
+            <div class="flex items-center bg-gray-100/80 rounded-2xl p-1.5 shadow-inner border border-gray-200/50">
               <button @click="prevMonth"
-                class="p-2 hover:bg-white hover:shadow-sm rounded-lg transition-all text-gray-600">
+                class="p-2 hover:bg-white hover:shadow-md hover:text-blue-600 rounded-xl transition-all text-gray-500 active:scale-90">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <div class="w-px h-4 bg-gray-300 mx-1"></div>
+
+              <div class="w-px h-5 bg-gray-300/60 mx-1.5"></div>
+
               <button @click="nextMonth"
-                class="p-2 hover:bg-white hover:shadow-sm rounded-lg transition-all text-gray-600">
+                class="p-2 hover:bg-white hover:shadow-md hover:text-blue-600 rounded-xl transition-all text-gray-500 active:scale-90">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             </div>
           </div>
+
+          <button @click="goToToday"
+            class="hidden sm:block px-4 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
+            Aujourd'hui
+          </button>
         </div>
 
         <div class="overflow-x-auto">
@@ -132,7 +149,7 @@ onMounted(async () => {
                   isWeekend(day) ? 'bg-gray-100/50' : ''
                 ]">
                   <span :class="['block text-sm font-black', isWeekend(day) ? 'text-gray-400' : 'text-gray-800']">{{ day
-                    }}</span>
+                  }}</span>
                   <span class="text-[10px] uppercase font-bold text-gray-400">
                     {{ getDayName(day) }}
                   </span>
@@ -154,7 +171,7 @@ onMounted(async () => {
                     <div class="flex flex-col">
                       <span class="text-sm font-bold text-gray-800">{{ user.first_name }}</span>
                       <span class="text-[10px] text-gray-400 font-medium italic truncate w-24">{{ user.role_label
-                        }}</span>
+                      }}</span>
                     </div>
                   </div>
                 </td>
