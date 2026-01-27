@@ -48,12 +48,6 @@ class LeaveViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-
-        if user.role in ["ADMIN", "RESP"]:
-            return models.Leave.objects.select_related("user", "approved_by").order_by(
-                "-created_at"
-            )
-
         return models.Leave.objects.filter(user=user).order_by("-created_at")
 
     def perform_create(self, serializer):
@@ -95,3 +89,9 @@ class LeaveViewSet(viewsets.ModelViewSet):
         raise PermissionDenied(
             "Vous ne pouvez pas supprimer un congé validé ou rejeté."
         )
+
+class LeaveAPIView(APIView):
+    def get(self, request):
+        leaves = models.Leave.objects.all()
+        serializer = serializers.LeaveSerializer(leaves, many=True)
+        return Response(serializer.data)
