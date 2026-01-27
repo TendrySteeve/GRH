@@ -35,5 +35,8 @@ class LeaveSerializer(serializers.ModelSerializer):
             "end_date",
             "reason",
             "approved_by",
+            "leave_type_label",
+            "status_label",
+            "status"
         ]
         read_only_fields = ["created_at"]

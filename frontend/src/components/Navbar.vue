@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import logoImg from "../assets/Logo.png"
-import { CalendarIcon, ChevronDownIcon, ChevronUpIcon, Squares2X2Icon } from '@heroicons/vue/24/solid'
+import { CalendarIcon, ChevronDownIcon, ChevronUpIcon, Squares2X2Icon, CalendarDaysIcon } from '@heroicons/vue/24/solid'
 import { useRouter, useRoute } from 'vue-router';
 import { logout, profil } from "../api/auth";
 import {getInitials} from '../utils/Methods'
@@ -19,10 +19,15 @@ const links = ref([
     icon: CalendarIcon
   },
   {
-    path: "/manage",
+    path: "/manage-schedule",
     label: "Gestion des planning",
     icon: Squares2X2Icon
-  }
+  },
+   {
+    path: "/manage-leave",
+    label: "Gestion des congé",
+    icon: CalendarDaysIcon
+   }
 ])
 
 const isActive = (menuRoute) => {

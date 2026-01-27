@@ -24,9 +24,15 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/manage",
-    name: "manage",
+    path: "/manage-schedule",
+    name: "manage-schedule",
     component: () => import("../views/ScheduleManagement.vue"),
+    meta: {requiresAuth: true}
+  },
+  {
+    path: "/manage-leave",
+    name: "manage-leave",
+    component: () => import("../views/LeaveManagement.vue"),
     meta: {requiresAuth: true}
   },
   {
