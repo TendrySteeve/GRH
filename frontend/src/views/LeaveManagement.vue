@@ -15,6 +15,7 @@ import {
   PencilSquareIcon
 } from '@heroicons/vue/24/outline'
 import { BriefcaseIcon, CalendarIcon, ChatBubbleBottomCenterTextIcon, ChevronDownIcon, PaperAirplaneIcon } from '@heroicons/vue/24/solid'
+import StatusMessage from '../components/message/StatusMessage.vue'
 
 const leaves = ref([])
 const loading = ref(true)
@@ -24,6 +25,12 @@ const user = ref({})
 const isEditMode = ref(false)
 const editingId = ref(null)
 const selectedStatus = ref('ALL')
+const alert = ref({
+  show: false,
+  type: 'success',
+  title: '',
+  message: ''
+})
 
 const form = ref({
   leave_type: '',
@@ -51,9 +58,24 @@ const submitLeave = async () => {
       await createLeave(payload)
     }
 
+    alert.value = {
+      show: true,
+      type: 'success',
+      title: 'Succès !',
+      message: "Votre demande de congé a été enregistrée avec succès."
+    }
+    setTimeout(() => alert.value.show = false, 3000)
     await loadLeaves()
     closeModal()
   } catch (error) {
+    console.log(error)
+    alert.value = {
+      show: true,
+      type: 'error',
+      title: 'Erreur',
+      message: "Erreur lors de l'enregistrement du congé"
+    }
+    setTimeout(() => alert.value.show = false, 3000)
     console.error("Erreur lors de l'enregistrement du congé :", error)
   } finally {
     submitting.value = false
@@ -80,8 +102,19 @@ const openEditModal = (leave) => {
 }
 
 const removeLeave = async (id) => {
-  await deleteLeave(id)
-  leaves.value = leaves.value.filter(l => l.id !== id)
+  try {
+    await deleteLeave(id)
+    leaves.value = leaves.value.filter(l => l.id !== id)
+
+  } catch (error) {
+    alert.value = {
+      show: true,
+      type: 'error',
+      title: 'Erreur',
+      message: "Erreur lors de la suppression du congé"
+    }
+    setTimeout(() => alert.value.show = false, 3000)
+  }
 }
 
 
@@ -102,11 +135,6 @@ const getCount = (status) => {
   return leaves.value.filter(l => l.status?.toUpperCase() === status.toUpperCase()).length
 }
 
-const statusColor = (status) =>
-  status === 'APPROVED' ? 'text-green-600' :
-    status === 'REJECTED' ? 'text-red-600' :
-      'text-yellow-600'
-
 onMounted(async () => {
   await loadLeaves()
   try {
@@ -119,6 +147,8 @@ onMounted(async () => {
 
 <template>
   <MainLayout>
+    <StatusMessage :show="alert.show" :type="alert.type" :title="alert.title" :message="alert.message"
+      @close="alert.show = false" />
     <div class="max-w-5xl mx-auto px-6 py-10 bg-gray-50/50">
 
       <div
